@@ -19,7 +19,7 @@ class AzureDeployment:
 
     deployment_name: str
     api_version: str
-    streaming: bool = True
+    stream: bool = True
     context_window: int = 200_000
     supports_extended_thinking: bool = False
     fixed_temperature: Optional[float] = None
@@ -46,7 +46,7 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
             self.deployments[name] = AzureDeployment(
                 deployment_name=cfg.get("deployment_name", name),
                 api_version=cfg.get("api_version", default_api_version),
-                streaming=cfg.get("streaming", True),
+                stream=cfg.get("stream", True),
                 context_window=cfg.get("context_window", 200_000),
                 supports_extended_thinking=cfg.get("supports_extended_thinking", False),
                 fixed_temperature=cfg.get("fixed_temperature"),
@@ -84,7 +84,7 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
             context_window=config.context_window,
             supports_extended_thinking=config.supports_extended_thinking,
             supports_system_prompts=True,
-            supports_streaming=config.streaming,
+            supports_streaming=config.stream,
             supports_function_calling=True,
             temperature_constraint=temp_constraint,
         )
@@ -107,7 +107,7 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
 
         self.validate_parameters(model_name, temperature)
 
-        kwargs.setdefault("stream", config.streaming)
+        kwargs.setdefault("stream", config.stream)
         client = self._get_client(config.api_version)
 
         messages = []
@@ -130,22 +130,61 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
 
         try:
             response = client.chat.completions.create(**completion_params)
-            content = response.choices[0].message.content
-            usage = self._extract_usage(response)
+            
+            # Handle streaming response
+            if kwargs.get("stream", False):
+                content = ""
+                finish_reason = None
+                model = None
+                response_id = None
+                created = None
+                
+                for chunk in response:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        content += chunk.choices[0].delta.content
+                    if chunk.choices and chunk.choices[0].finish_reason:
+                        finish_reason = chunk.choices[0].finish_reason
+                    if chunk.model:
+                        model = chunk.model
+                    if chunk.id:
+                        response_id = chunk.id
+                    if chunk.created:
+                        created = chunk.created
+                
+                # Usage is typically not available in streaming responses
+                usage = {}
+                
+                return ModelResponse(
+                    content=content,
+                    usage=usage,
+                    model_name=model_name,
+                    friendly_name="Azure OpenAI",
+                    provider=ProviderType.AZURE,
+                    metadata={
+                        "finish_reason": finish_reason,
+                        "model": model,
+                        "id": response_id,
+                        "created": created,
+                    },
+                )
+            else:
+                # Handle non-streaming response
+                content = response.choices[0].message.content
+                usage = self._extract_usage(response)
 
-            return ModelResponse(
-                content=content,
-                usage=usage,
-                model_name=model_name,
-                friendly_name="Azure OpenAI",
-                provider=ProviderType.AZURE,
-                metadata={
-                    "finish_reason": response.choices[0].finish_reason,
-                    "model": response.model,
-                    "id": response.id,
-                    "created": response.created,
-                },
-            )
+                return ModelResponse(
+                    content=content,
+                    usage=usage,
+                    model_name=model_name,
+                    friendly_name="Azure OpenAI",
+                    provider=ProviderType.AZURE,
+                    metadata={
+                        "finish_reason": response.choices[0].finish_reason,
+                        "model": response.model,
+                        "id": response.id,
+                        "created": response.created,
+                    },
+                )
         except Exception as e:
             raise RuntimeError(f"Azure OpenAI API error for model {model_name}: {e}") from e
 

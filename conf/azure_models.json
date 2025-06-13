@@ -5,16 +5,16 @@
       "deployment_name": "o3",
       "context_window": 200000,
       "supports_extended_thinking": true,
-      "streaming": false,
+      "stream": false,
       "api_version": "2025-01-01-preview",
-      "fixed_temperature": 1.0
+      "fixed_temperature": 1
     },
     {
       "model_name": "gpt-4.1",
       "deployment_name": "gpt-4-1",
       "context_window": 1000000,
       "supports_extended_thinking": false,
-      "streaming": true,
+      "stream": true,
       "api_version": "2025-01-01-preview"
     },
     {
@@ -22,7 +22,8 @@
       "deployment_name": "o4-mini",
       "context_window": 200000,
       "supports_extended_thinking": true,
-      "streaming": true,
+      "stream": true,
+      "fixed_temperature": 1,
       "api_version": "2025-01-01-preview"
     },
     {
@@ -30,7 +31,7 @@
       "deployment_name": "gpt-4.1-nano",
       "context_window": 1000000,
       "supports_extended_thinking": false,
-      "streaming": true,
+      "stream": true,
       "api_version": "2025-01-01-preview"
     }
   ]
