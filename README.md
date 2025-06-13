@@ -103,7 +103,7 @@ The final implementation resulted in a 26% improvement in JSON parsing performan
 **Option B: Native APIs**
 - **Gemini**: Visit [Google AI Studio](https://makersuite.google.com/app/apikey) and generate an API key. For best results with Gemini 2.5 Pro, use a paid API key as the free tier has limited access to the latest models.
 - **OpenAI**: Visit [OpenAI Platform](https://platform.openai.com/api-keys) to get an API key for O3 model access.
-- **Azure OpenAI**: Requires an [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview) resource with one or more deployments. Configure deployments in `conf/azure_models.json` or via `AZURE_OPENAI_MODELS_CONFIG_PATH`.
+ - **Azure OpenAI**: Requires an [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview) resource with one or more deployments. Configure deployments in `conf/azure_models.json` or via `AZURE_OPENAI_MODELS_CONFIG_PATH`. Use `fixed_temperature` to override the model's required temperature.
 
 **Option C: Custom API Endpoints (Local models like Ollama, vLLM)**
 [Please see the setup guide](docs/custom_models.md#custom-api-setup-ollama-vllm-etc). With a custom API you can use:
@@ -509,7 +509,7 @@ DEFAULT_MODEL=auto  # Claude picks the best model automatically
 GEMINI_API_KEY=your-gemini-key    # Enables Gemini Pro & Flash
 OPENAI_API_KEY=your-openai-key    # Enables O3, O3-mini
 AZURE_OPENAI_API_KEY=your-azure-key # Enables Azure deployments
-# AZURE_OPENAI_MODELS_CONFIG_PATH=conf/azure_models.json
+# AZURE_OPENAI_MODELS_CONFIG_PATH=conf/azure_models.json  # Define deployments; supports "fixed_temperature"
 ```
 
 **Available Models:**

@@ -6,7 +6,8 @@
       "context_window": 200000,
       "supports_extended_thinking": false,
       "streaming": true,
-      "api_version": "2023-07-01-preview"
+      "api_version": "2023-07-01-preview",
+      "fixed_temperature": 1.0
     },
     {
       "model_name": "gpt-4.1",
