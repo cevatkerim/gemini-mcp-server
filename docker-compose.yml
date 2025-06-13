@@ -3,8 +3,8 @@ services:
     image: redis:7-alpine
     container_name: zen-mcp-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
     volumes:
       - redis_data:/data
     command: redis-server --save 60 1 --loglevel warning --maxmemory 64mb --maxmemory-policy allkeys-lru
@@ -31,6 +31,13 @@ services:
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      # Azure OpenAI support
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME:-}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2023-07-01-preview}
+      - AZURE_OPENAI_STREAMING=${AZURE_OPENAI_STREAMING:-true}
+      - AZURE_OPENAI_MODELS_CONFIG_PATH=${AZURE_OPENAI_MODELS_CONFIG_PATH:-}
       # OpenRouter support
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
       - CUSTOM_MODELS_CONFIG_PATH=${CUSTOM_MODELS_CONFIG_PATH:-}
