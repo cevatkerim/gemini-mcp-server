@@ -8,6 +8,7 @@ from .base import (
     ModelResponse,
     ProviderType,
     RangeTemperatureConstraint,
+    FixedTemperatureConstraint,
 )
 from .openai_compatible import OpenAICompatibleProvider
 
@@ -21,6 +22,7 @@ class AzureDeployment:
     streaming: bool = True
     context_window: int = 200_000
     supports_extended_thinking: bool = False
+    fixed_temperature: Optional[float] = None
 
 
 class AzureOpenAIProvider(OpenAICompatibleProvider):
@@ -47,6 +49,7 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
                 streaming=cfg.get("streaming", True),
                 context_window=cfg.get("context_window", 200_000),
                 supports_extended_thinking=cfg.get("supports_extended_thinking", False),
+                fixed_temperature=cfg.get("fixed_temperature"),
             )
         self._clients: dict[str, object] = {}
 
@@ -69,6 +72,11 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
         if not config:
             raise ValueError(f"Unsupported Azure deployment: {model_name}")
 
+        if config.fixed_temperature is not None:
+            temp_constraint = FixedTemperatureConstraint(config.fixed_temperature)
+        else:
+            temp_constraint = RangeTemperatureConstraint(0.0, 2.0, 0.7)
+
         return ModelCapabilities(
             provider=ProviderType.AZURE,
             model_name=model_name,
@@ -78,7 +86,7 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
             supports_system_prompts=True,
             supports_streaming=config.streaming,
             supports_function_calling=True,
-            temperature_constraint=RangeTemperatureConstraint(0.0, 2.0, 0.7),
+            temperature_constraint=temp_constraint,
         )
 
     def generate_content(
@@ -93,6 +101,11 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
         config = self.deployments.get(model_name)
         if not config:
             raise ValueError(f"Unsupported Azure deployment: {model_name}")
+
+        if config.fixed_temperature is not None:
+            temperature = config.fixed_temperature
+
+        self.validate_parameters(model_name, temperature)
 
         kwargs.setdefault("stream", config.streaming)
         client = self._get_client(config.api_version)
