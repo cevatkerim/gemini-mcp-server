@@ -1,0 +1,20 @@
+{
+  "deployments": [
+    {
+      "model_name": "o3",
+      "deployment_name": "o3",
+      "context_window": 200000,
+      "supports_extended_thinking": false,
+      "streaming": true,
+      "api_version": "2023-07-01-preview"
+    },
+    {
+      "model_name": "gpt-4.1",
+      "deployment_name": "gpt-4-1",
+      "context_window": 200000,
+      "supports_extended_thinking": false,
+      "streaming": true,
+      "api_version": "2023-07-01-preview"
+    }
+  ]
+}

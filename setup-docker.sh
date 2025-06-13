@@ -141,6 +141,15 @@ else
             echo "⚠️  Found AZURE_OPENAI_STREAMING in environment, but sed not available. Please update .env manually."
         fi
     fi
+
+    if [ -n "${AZURE_OPENAI_MODELS_CONFIG_PATH:-}" ]; then
+        if command -v sed >/dev/null 2>&1; then
+            sed -i.bak "s|AZURE_OPENAI_MODELS_CONFIG_PATH=conf/azure_models.json|AZURE_OPENAI_MODELS_CONFIG_PATH=$AZURE_OPENAI_MODELS_CONFIG_PATH|" .env && rm .env.bak
+            echo "✅ Updated .env with existing AZURE_OPENAI_MODELS_CONFIG_PATH from environment"
+        else
+            echo "⚠️  Found AZURE_OPENAI_MODELS_CONFIG_PATH in environment, but sed not available. Please update .env manually."
+        fi
+    fi
     
     if [ -n "${OPENROUTER_API_KEY:-}" ]; then
         # Replace the placeholder API key with the actual value
@@ -214,7 +223,7 @@ if [ -n "${OPENROUTER_API_KEY:-}" ] && [ "$OPENROUTER_API_KEY" != "your_openrout
 fi
 
 # Check if Azure OpenAI is fully configured (key + endpoint + deployment)
-if [ -n "${AZURE_OPENAI_API_KEY:-}" ] && [ -n "${AZURE_OPENAI_ENDPOINT:-}" ] && [ -n "${AZURE_OPENAI_DEPLOYMENT_NAME:-}" ]; then
+if [ -n "${AZURE_OPENAI_API_KEY:-}" ] && [ -n "${AZURE_OPENAI_ENDPOINT:-}" ] && { [ -n "${AZURE_OPENAI_DEPLOYMENT_NAME:-}" ] || [ -n "${AZURE_OPENAI_MODELS_CONFIG_PATH:-}" ]; }; then
     VALID_AZURE_CONFIG=true
     echo "✅ Azure OpenAI configuration found"
 fi
@@ -233,7 +242,7 @@ if [ "$VALID_GEMINI_KEY" = false ] && [ "$VALID_OPENAI_KEY" = false ] && [ "$VAL
     echo "Please edit the .env file and set at least one of:"
     echo "  - GEMINI_API_KEY (get from https://makersuite.google.com/app/apikey)"
     echo "  - OPENAI_API_KEY (get from https://platform.openai.com/api-keys)"
-    echo "  - AZURE_OPENAI_API_KEY + AZURE_OPENAI_ENDPOINT + AZURE_OPENAI_DEPLOYMENT_NAME"
+    echo "  - AZURE_OPENAI_API_KEY + AZURE_OPENAI_ENDPOINT + (AZURE_OPENAI_DEPLOYMENT_NAME or AZURE_OPENAI_MODELS_CONFIG_PATH)"
     echo "  - OPENROUTER_API_KEY (get from https://openrouter.ai/)"
     echo "  - CUSTOM_API_URL (for local models like Ollama, vLLM, etc.)"
     echo ""
@@ -243,6 +252,8 @@ if [ "$VALID_GEMINI_KEY" = false ] && [ "$VALID_OPENAI_KEY" = false ] && [ "$VAL
     echo "  AZURE_OPENAI_API_KEY=your-azure-key"
     echo "  AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com"
     echo "  AZURE_OPENAI_DEPLOYMENT_NAME=my-model"
+    echo "  # or use a config file with multiple deployments"
+    echo "  AZURE_OPENAI_MODELS_CONFIG_PATH=/path/to/azure_models.json"
     echo "  OPENROUTER_API_KEY=sk-or-your-actual-openrouter-key-here"
     echo "  CUSTOM_API_URL=http://host.docker.internal:11434/v1  # Ollama (use host.docker.internal, NOT localhost!)"
     echo ""

@@ -103,7 +103,7 @@ The final implementation resulted in a 26% improvement in JSON parsing performan
 **Option B: Native APIs**
 - **Gemini**: Visit [Google AI Studio](https://makersuite.google.com/app/apikey) and generate an API key. For best results with Gemini 2.5 Pro, use a paid API key as the free tier has limited access to the latest models.
 - **OpenAI**: Visit [OpenAI Platform](https://platform.openai.com/api-keys) to get an API key for O3 model access.
-- **Azure OpenAI**: Requires an [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview) resource with a deployment name and endpoint.
+- **Azure OpenAI**: Requires an [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview) resource with one or more deployments. Configure deployments in `conf/azure_models.json` or via `AZURE_OPENAI_MODELS_CONFIG_PATH`.
 
 **Option C: Custom API Endpoints (Local models like Ollama, vLLM)**
 [Please see the setup guide](docs/custom_models.md#custom-api-setup-ollama-vllm-etc). With a custom API you can use:
@@ -149,6 +149,7 @@ nano .env
 # AZURE_OPENAI_DEPLOYMENT_NAME=            # Your deployment name
 # AZURE_OPENAI_API_VERSION=2023-07-01-preview
 # AZURE_OPENAI_STREAMING=true              # "false" to disable streaming
+# AZURE_OPENAI_MODELS_CONFIG_PATH=conf/azure_models.json  # Optional JSON config
 # OPENROUTER_API_KEY=your-openrouter-key  # For OpenRouter (see docs/custom_models.md)
 
 # For local models (Ollama, vLLM, etc.) - Note: Use host.docker.internal for Docker networking:
@@ -508,6 +509,7 @@ DEFAULT_MODEL=auto  # Claude picks the best model automatically
 GEMINI_API_KEY=your-gemini-key    # Enables Gemini Pro & Flash
 OPENAI_API_KEY=your-openai-key    # Enables O3, O3-mini
 AZURE_OPENAI_API_KEY=your-azure-key # Enables Azure deployments
+# AZURE_OPENAI_MODELS_CONFIG_PATH=conf/azure_models.json
 ```
 
 **Available Models:**
