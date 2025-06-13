@@ -143,6 +143,11 @@ nano .env
 # The file will contain, at least one should be set:
 # GEMINI_API_KEY=your-gemini-api-key-here  # For Gemini models
 # OPENAI_API_KEY=your-openai-api-key-here  # For O3 model
+# AZURE_OPENAI_API_KEY=                    # For Azure OpenAI
+# AZURE_OPENAI_ENDPOINT=                   # https://your-endpoint.openai.azure.com
+# AZURE_OPENAI_DEPLOYMENT_NAME=            # Your deployment name
+# AZURE_OPENAI_API_VERSION=2023-07-01-preview
+# AZURE_OPENAI_STREAMING=true              # "false" to disable streaming
 # OPENROUTER_API_KEY=your-openrouter-key  # For OpenRouter (see docs/custom_models.md)
 
 # For local models (Ollama, vLLM, etc.) - Note: Use host.docker.internal for Docker networking:
