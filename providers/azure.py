@@ -193,12 +193,6 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
         except Exception as e:
             raise RuntimeError(f"Azure OpenAI API error for model {model_name}: {e}") from e
 
-    def get_provider_type(self) -> ProviderType:
-        return ProviderType.AZURE
-
-    def validate_model_name(self, model_name: str) -> bool:
-        return model_name in self.deployments
-
     def supports_thinking_mode(self, model_name: str) -> bool:
         config = self.deployments.get(model_name)
         return bool(config and config.supports_extended_thinking)
