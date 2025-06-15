@@ -1,9 +1,9 @@
 """Model provider abstractions for supporting multiple AI providers."""
 
+from .azure import AzureOpenAIProvider
 from .base import ModelCapabilities, ModelProvider, ModelResponse
 from .gemini import GeminiModelProvider
 from .openai import OpenAIModelProvider
-from .azure import AzureOpenAIProvider
 from .openai_compatible import OpenAICompatibleProvider
 from .openrouter import OpenRouterProvider
 from .registry import ModelProviderRegistry

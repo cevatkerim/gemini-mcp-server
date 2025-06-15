@@ -2,11 +2,8 @@
 
 from unittest.mock import MagicMock
 
-import pytest
-
 from providers.azure import AzureOpenAIProvider
 from providers.base import ProviderType
-
 
 DEPLOYMENTS = {
     "o3": {

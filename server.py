@@ -129,11 +129,11 @@ def configure_providers():
         ValueError: If no valid API keys are found or conflicting configurations detected
     """
     from providers import ModelProviderRegistry
+    from providers.azure import AzureOpenAIProvider
     from providers.base import ProviderType
     from providers.custom import CustomProvider
     from providers.gemini import GeminiModelProvider
     from providers.openai import OpenAIModelProvider
-    from providers.azure import AzureOpenAIProvider
     from providers.openrouter import OpenRouterProvider
 
     valid_providers = []

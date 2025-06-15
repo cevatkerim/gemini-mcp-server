@@ -1,14 +1,14 @@
 """Azure OpenAI provider implementation supporting multiple deployments."""
 
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Optional
 
 from .base import (
+    FixedTemperatureConstraint,
     ModelCapabilities,
     ModelResponse,
     ProviderType,
     RangeTemperatureConstraint,
-    FixedTemperatureConstraint,
 )
 from .openai_compatible import OpenAICompatibleProvider
 
@@ -19,8 +19,8 @@ class AzureDeployment:
 
     deployment_name: str
     api_version: str
-    stream: bool = True
-    context_window: int = 200_000
+        deployments: dict[str, dict],
+        self.deployments: dict[str, AzureDeployment] = {}
     supports_extended_thinking: bool = False
     fixed_temperature: Optional[float] = None
 
