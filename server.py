@@ -129,6 +129,7 @@ def configure_providers():
         ValueError: If no valid API keys are found or conflicting configurations detected
     """
     from providers import ModelProviderRegistry
+    from providers.azure import AzureOpenAIProvider
     from providers.base import ProviderType
     from providers.custom import CustomProvider
     from providers.gemini import GeminiModelProvider
@@ -153,6 +154,37 @@ def configure_providers():
         valid_providers.append("OpenAI (o3)")
         has_native_apis = True
         logger.info("OpenAI API key found - o3 model available")
+
+    # Check for Azure OpenAI configuration
+    azure_key = os.getenv("AZURE_OPENAI_API_KEY")
+    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+    azure_deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+    azure_models_path = os.getenv("AZURE_OPENAI_MODELS_CONFIG_PATH")
+    azure_deployments = {}
+
+    if azure_models_path:
+        try:
+            import json
+
+            with open(azure_models_path) as f:
+                data = json.load(f)
+            for item in data.get("deployments", []):
+                if item.get("model_name") and item.get("deployment_name"):
+                    azure_deployments[item["model_name"]] = item
+        except Exception as e:
+            logger.error(f"Failed to load Azure models config: {e}")
+
+    if not azure_deployments and azure_deployment:
+        azure_deployments[azure_deployment] = {
+            "deployment_name": azure_deployment,
+            "stream": os.getenv("AZURE_OPENAI_STREAMING", "true").lower() != "false",
+            "api_version": os.getenv("AZURE_OPENAI_API_VERSION", "2023-07-01-preview"),
+        }
+
+    if azure_key and azure_endpoint and azure_deployments:
+        valid_providers.append("Azure OpenAI")
+        has_native_apis = True
+        logger.info("Azure OpenAI configuration found - Azure deployments available")
 
     # Check for OpenRouter API key
     openrouter_key = os.getenv("OPENROUTER_API_KEY")
@@ -185,6 +217,17 @@ def configure_providers():
             ModelProviderRegistry.register_provider(ProviderType.GOOGLE, GeminiModelProvider)
         if openai_key and openai_key != "your_openai_api_key_here":
             ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
+        if azure_key and azure_endpoint and azure_deployments:
+
+            def azure_provider_factory(api_key=None):
+                return AzureOpenAIProvider(
+                    api_key=api_key or azure_key,
+                    endpoint_url=azure_endpoint,
+                    deployments=azure_deployments,
+                    default_api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2023-07-01-preview"),
+                )
+
+            ModelProviderRegistry.register_provider(ProviderType.AZURE, azure_provider_factory)
 
     # 2. Custom provider second (for local/private models)
     if has_custom:
@@ -215,7 +258,7 @@ def configure_providers():
     # Log provider priority
     priority_info = []
     if has_native_apis:
-        priority_info.append("Native APIs (Gemini, OpenAI)")
+        priority_info.append("Native APIs (Gemini, OpenAI, Azure)")
     if has_custom:
         priority_info.append("Custom endpoints")
     if has_openrouter:

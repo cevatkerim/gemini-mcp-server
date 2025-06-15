@@ -11,7 +11,22 @@
       "Bash(cat:*)",
       "Bash(grep:*)",
       "Bash(source:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "mcp__zen__chat",
+      "mcp__zen__get_version",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(docker logs:*)",
+      "Bash(gh issue:*)",
+      "Bash(docker restart:*)",
+      "Bash(./setup-docker.sh:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh run view:*)",
+      "Bash(black:*)",
+      "Bash(python -m black:*)",
+      "Bash(python -m pytest tests/test_azure_provider.py::TestAzureOpenAIProvider::test_initialization -xvs)"
     ],
     "deny": []
   }
