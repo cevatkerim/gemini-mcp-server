@@ -176,7 +176,7 @@ def configure_providers():
     if not azure_deployments and azure_deployment:
         azure_deployments[azure_deployment] = {
             "deployment_name": azure_deployment,
-            "streaming": os.getenv("AZURE_OPENAI_STREAMING", "true").lower() != "false",
+            "stream": os.getenv("AZURE_OPENAI_STREAMING", "true").lower() != "false",
             "api_version": os.getenv("AZURE_OPENAI_API_VERSION", "2023-07-01-preview"),
         }
 

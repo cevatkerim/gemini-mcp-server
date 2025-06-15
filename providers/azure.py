@@ -19,29 +19,65 @@ class AzureDeployment:
 
     deployment_name: str
     api_version: str
-        deployments: dict[str, dict],
+    stream: bool = True
         self.deployments: dict[str, AzureDeployment] = {}
-    supports_extended_thinking: bool = False
-    fixed_temperature: Optional[float] = None
+                stream=cfg.get("stream", True),
+            supports_streaming=config.stream,
 
 
-class AzureOpenAIProvider(OpenAICompatibleProvider):
-    """Azure OpenAI provider with support for multiple deployments."""
+        kwargs.setdefault("stream", config.stream)
 
-    def __init__(
-        self,
-        api_key: str,
-        *,
-        endpoint_url: str,
-        deployments: Dict[str, dict],
-        default_api_version: str = "2023-07-01-preview",
-        **kwargs,
-    ) -> None:
-        """Initialize provider with endpoint and deployment configuration."""
-        super().__init__(api_key, **kwargs)
-        self.endpoint_url = endpoint_url
-        self.default_api_version = default_api_version
-        self.deployments: Dict[str, AzureDeployment] = {}
+            if kwargs.get("stream", False):
+                content = ""
+                finish_reason = None
+                model = None
+                response_id = None
+                created = None
+
+                for chunk in response:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        content += chunk.choices[0].delta.content
+                    if chunk.choices and chunk.choices[0].finish_reason:
+                        finish_reason = chunk.choices[0].finish_reason
+                    if chunk.model:
+                        model = chunk.model
+                    if chunk.id:
+                        response_id = chunk.id
+                    if chunk.created:
+                        created = chunk.created
+
+                usage = {}
+
+                return ModelResponse(
+                    content=content,
+                    usage=usage,
+                    model_name=model_name,
+                    friendly_name="Azure OpenAI",
+                    provider=ProviderType.AZURE,
+                    metadata={
+                        "finish_reason": finish_reason,
+                        "model": model,
+                        "id": response_id,
+                        "created": created,
+                    },
+                )
+            else:
+                content = response.choices[0].message.content
+                usage = self._extract_usage(response)
+
+                return ModelResponse(
+                    content=content,
+                    usage=usage,
+                    model_name=model_name,
+                    friendly_name="Azure OpenAI",
+                    provider=ProviderType.AZURE,
+                    metadata={
+                        "finish_reason": response.choices[0].finish_reason,
+                        "model": response.model,
+                        "id": response.id,
+                        "created": response.created,
+                    },
+                )
         for name, cfg in deployments.items():
             self.deployments[name] = AzureDeployment(
                 deployment_name=cfg.get("deployment_name", name),

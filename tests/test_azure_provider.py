@@ -8,11 +8,11 @@ from providers.base import ProviderType
 DEPLOYMENTS = {
     "o3": {
         "deployment_name": "o3",
-        "streaming": True,
+        "stream": True,
         "api_version": "2024-02-15",
         "fixed_temperature": 1.0,
     },
-    "gpt-4.1": {"deployment_name": "gpt-4-1", "streaming": False},
+    "gpt-4.1": {"deployment_name": "gpt-4-1", "stream": False},
 }
 
 
