@@ -35,7 +35,8 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
         deployments: dict,
         default_api_version: str = "2025-01-01-preview",
     ):
-        super().__init__(api_key, endpoint_url)
+        super().__init__(api_key, base_url=endpoint_url)
+        self.endpoint_url = endpoint_url  # Keep Azure's terminology
         self.deployments: dict[str, AzureDeployment] = {}
 
         for name, cfg in deployments.items():
