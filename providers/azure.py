@@ -135,7 +135,7 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
 
         try:
             response = client.chat.completions.create(**completion_params)
-            
+
             # Handle streaming response
             if kwargs.get("stream", False):
                 content = ""
@@ -143,7 +143,7 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
                 model = None
                 response_id = None
                 created = None
-                
+
                 for chunk in response:
                     if chunk.choices and chunk.choices[0].delta.content:
                         content += chunk.choices[0].delta.content
@@ -155,10 +155,10 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
                         response_id = chunk.id
                     if chunk.created:
                         created = chunk.created
-                
+
                 # Usage is typically not available in streaming responses
                 usage = {}
-                
+
                 return ModelResponse(
                     content=content,
                     usage=usage,

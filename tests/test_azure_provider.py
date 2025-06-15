@@ -23,7 +23,7 @@ class TestAzureOpenAIProvider:
             endpoint_url="https://example.azure.com",
             deployments=DEPLOYMENTS,
         )
-        assert provider.endpoint_url == "https://example.azure.com"
+        assert provider.base_url == "https://example.azure.com"
         assert provider.validate_model_name("o3")
         assert provider.get_provider_type() == ProviderType.AZURE
 

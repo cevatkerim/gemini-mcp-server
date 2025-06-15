@@ -165,6 +165,7 @@ def configure_providers():
     if azure_models_path:
         try:
             import json
+
             with open(azure_models_path) as f:
                 data = json.load(f)
             for item in data.get("deployments", []):
