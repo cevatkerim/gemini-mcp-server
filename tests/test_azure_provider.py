@@ -103,5 +103,3 @@ class TestAzureOpenAIProvider:
         # Temperature should be overridden to 1.0
         kwargs = fake_client.chat.completions.create.call_args.kwargs
         assert kwargs["temperature"] == 1.0
-
-

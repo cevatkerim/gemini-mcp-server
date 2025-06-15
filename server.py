@@ -217,6 +217,7 @@ def configure_providers():
         if openai_key and openai_key != "your_openai_api_key_here":
             ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
         if azure_key and azure_endpoint and azure_deployments:
+
             def azure_provider_factory(api_key=None):
                 return AzureOpenAIProvider(
                     api_key=api_key or azure_key,

@@ -37,7 +37,7 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
     ):
         super().__init__(api_key, endpoint_url)
         self.deployments: dict[str, AzureDeployment] = {}
-        
+
         for name, cfg in deployments.items():
             self.deployments[name] = AzureDeployment(
                 deployment_name=cfg.get("deployment_name", name),
@@ -48,6 +48,14 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
                 fixed_temperature=cfg.get("fixed_temperature"),
             )
         self._clients: dict[str, object] = {}
+
+    def get_provider_type(self) -> ProviderType:
+        """Get the provider type."""
+        return ProviderType.AZURE
+
+    def validate_model_name(self, model_name: str) -> bool:
+        """Check if the model name is a configured deployment."""
+        return model_name in self.deployments
 
     def _get_client(self, api_version: str):
         """Get or create Azure client for the specified API version."""
